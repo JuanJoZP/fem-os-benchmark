@@ -74,4 +74,4 @@ for i in $(seq 1 $REPS); do
     echo "$i,$elapsed,$max_res,$minor,$major,$volctx,$involctx,$cpu,$swaps" >> "$CSV_FILE"
 done
 
-echo "Benchmark completado
+echo "Benchmark completado"
