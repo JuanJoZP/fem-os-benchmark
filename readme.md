@@ -17,8 +17,8 @@ This runs the benchmark described by the configuration file `test1.env`.
 Each benchmark configuration is defined by a `.env` file. Example:
 
 ```env
-TRIAL_FILE=trials/trial1.py
-CPUS=2
+TRIAL_FILE=trials/volume_taylor.py
+CPU_SET="0,1"
 MEMORY="4g"
 SWAP="6g"
 THP_MODE=always
@@ -31,7 +31,7 @@ SCHED_CHILD_FIRST=1
 ### 🛠 Required Parameters
 
 -   **TRIAL_FILE**: Path to the Python script to benchmark (e.g., `trials/trial1.py`). This should be a parallel program compatible with MPI (such as a FEniCSx script).
--   **CPUS**: Number of CPUs (e.g., `2`)
+-   **CPU_SET**: IDs of CPUs assigned to the container (e.g., `1,2`)
 -   **MEMORY**: Memory limit (e.g., `4g`)
 -   **SWAP**: Swap size (e.g., `6g`)
 
