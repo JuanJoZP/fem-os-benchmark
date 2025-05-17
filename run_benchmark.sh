@@ -14,22 +14,31 @@ if [[ ! -f "$ENV_FILE" ]]; then
 fi
 
 cp "$ENV_FILE" .env
-
 # Exportar variables de entorno desde .env
 set -a
 source .env
 set +a
 
+IMAGE_NAME=benchmark_img_tmp
 
 echo "Construyendo imagen Docker"
-docker build -t $IMAGE_NAME .
+docker build -q --build-arg TRIAL_FILE="$TRIAL_FILE" -t $IMAGE_NAME .
+
+CONTAINER_NAME=benchmark_temp
+HOST_LOG_DIR=./benchmark_logs
 
 echo "Ejecutando contenedor"
-docker run --rm --privileged \
-  --cpus="$CPUS" \
-  --memory="$MEMORY" \
-  --memory-swap="$SWAP" \
+docker run --privileged --name "$CONTAINER_NAME" \
+  --cpuset-cpus=$CPU_SET \
+  --memory=$MEMORY \
+  --memory-swap=$SWAP \
   $IMAGE_NAME
 
+docker cp "$CONTAINER_NAME":/root/shared/benchmark_logs /tmp/container_logs
+mkdir -p "$HOST_LOG_DIR"
+rsync -av --ignore-existing /tmp/container_logs/benchmark_logs/ "$HOST_LOG_DIR/"
+rm -rf /tmp/container_logs
+
+docker rm "$CONTAINER_NAME"
 docker image rm $IMAGE_NAME --force
 rm .env

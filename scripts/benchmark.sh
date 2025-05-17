@@ -4,26 +4,21 @@ set -e
 echo "Aplicando parámetros del kernel..."
 /root/shared/set_kernel_params.sh || (echo "No se pudieron aplicar algunos parámetros (¿tienes permisos suficientes?)"; exit)
 
-# num CPUs asignados por Docker
-QUOTA=$(cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us)
-PERIOD=$(cat /sys/fs/cgroup/cpu/cpu.cfs_period_us)
 
-if [ "$QUOTA" -gt 0 ]; then
-    CPUS=$(( (QUOTA + PERIOD - 1) / PERIOD ))
-else
-    CPUS=$(nproc) 
-fi
-
+CPUS=$(nproc)
 export OMP_NUM_THREADS=$CPUS
 export MKL_NUM_THREADS=$CPUS
 export OPENBLAS_NUM_THREADS=$CPUS
 
 REPS=5
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-METRICS_FILE="/root/shared/${TIMESTAMP}/log.txt"
-CSV_FILE="/root/shared/${TIMESTAMP}/log.csv"
+TRIAL_FILE=$(grep '^TRIAL_FILE=' /root/shared/.env | cut -d '=' -f2-)
+TRIAL_NAME=$(basename "$TRIAL_FILE" .py)
+METRICS_FILE="/root/shared/benchmark_logs/${TRIAL_NAME}/${TIMESTAMP}/log.txt"
+CSV_FILE="/root/shared/benchmark_logs/${TRIAL_NAME}/${TIMESTAMP}/log.csv"
+mkdir -p "$(dirname "$CSV_FILE")"
 echo "repetition,real_time_sec,max_resident_kb,minor_faults,major_faults,vol_ctx_switches,invol_ctx_switches,cpu_percent,swaps" > "$CSV_FILE"
-INFO_FILE="/root/shared/${TIMESTAMP}/info.txt"
+INFO_FILE="/root/shared/benchmark_logs/${TRIAL_NAME}/${TIMESTAMP}/info.txt"
 /root/shared/get_os_info.sh >> "$INFO_FILE" 2>&1
 echo ""
 

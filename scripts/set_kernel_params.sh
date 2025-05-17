@@ -28,7 +28,7 @@ SCHED_CHILD_FIRST=${SCHED_CHILD_FIRST:-0}
 if [[ -f /sys/kernel/mm/transparent_hugepage/enabled ]]; then
     echo "$THP_MODE" > /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null
     if [[ $? -eq 0 ]]; then
-        echo "  THP configurado a '$THP_MODE'."
+        echo "THP configurado a '$THP_MODE'."
     else
         echo "No se pudo escribir en /sys/kernel/mm/transparent_hugepage/enabled (¿permiso denegado?)."
     fi
@@ -38,16 +38,15 @@ fi
 
 # Swappiness
 sysctl -w vm.swappiness=$SWAPPINESS || true
-echo "  Swappiness: $SWAPPINESS"
 
 # Dirty cache ratios
 sysctl -w vm.dirty_ratio=$DIRTY_RATIO || true
 sysctl -w vm.dirty_background_ratio=$DIRTY_BG_RATIO || true
-echo "  Dirty ratio: $DIRTY_RATIO"
-echo "  Dirty background ratio: $DIRTY_BG_RATIO"
 
-# Scheduler child runs first
-sysctl -w kernel.sched_child_runs_first=$SCHED_CHILD_FIRST || true
-echo "  Scheduler child first: $SCHED_CHILD_FIRST"
+if [ -f /proc/sys/kernel/sched_child_runs_first ]; then
+    sysctl -w kernel.sched_child_runs_first="$SCHED_CHILD_FIRST" || true
+else
+    echo "kernel.sched_child_runs_first no está disponible en este sistema. Se omite."
+fi
 
 echo "Parámetros aplicados."
