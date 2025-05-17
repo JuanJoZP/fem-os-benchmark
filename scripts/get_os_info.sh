@@ -8,8 +8,8 @@ echo "CPUs disponibles dentro del contenedor:"
 nproc
 echo
 
-echo "Número de hilos por CPU:"
-lscpu | grep "^Thread(s) per core"
+echo "Información de la CPU:"
+lscpu | grep -E 'Model name|Socket|Core|Thread|CPU\(s\)'
 echo
 
 echo "Memoria asignada al contenedor (MB):"

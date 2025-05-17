@@ -48,17 +48,6 @@ do
     awk "/\\[Repetición $i\\]/, /\\[Repetición $(($i + 1))\\]/" "$METRICS_FILE" 2>/dev/null |
     grep -E "Elapsed|Maximum resident|page faults|Context|CPU|swaps" |
     sed 's/^/  /'
-
-    REAL_TIME=$(awk "/\\[Repetición $i\\]/, /\\[Repetición $(($i + 1))\\]/" "$METRICS_FILE" 2>/dev/null | grep "Elapsed (wall clock)" | awk '{print $8}')
-    if [[ "$REAL_TIME" =~ ^([0-9]+):([0-9.]+)$ ]]; then
-        MIN=${BASH_REMATCH[1]}
-        SEC=${BASH_REMATCH[2]}
-        REAL_SEC=$(echo "$MIN * 60 + $SEC" | bc)
-    else
-        REAL_SEC=$REAL_TIME
-    fi
-    echo "  Throughput estimado: $(echo "scale=2; 1 / $REAL_SEC" | bc) iteraciones/seg"
-    echo ""
     
     if [ -n "$OOM_MSG" ]; then
         echo "Posible evento OOM detectado (ver log.txt)."
@@ -85,4 +74,4 @@ for i in $(seq 1 $REPS); do
     echo "$i,$elapsed,$max_res,$minor,$major,$volctx,$involctx,$cpu,$swaps" >> "$CSV_FILE"
 done
 
-echo "Benchmark completado. Resultados resumidos en $CSV_FILE"
+echo "Benchmark completado

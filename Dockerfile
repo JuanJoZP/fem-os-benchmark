@@ -4,6 +4,7 @@ ARG TRIAL_FILE
 
 RUN apt-get update && apt-get install -y \
     time \
+    bc \
     && python3 -m pip install tqdm \
     && rm -rf /var/lib/apt/lists/*
 

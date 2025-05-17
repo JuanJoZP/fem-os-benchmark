@@ -34,11 +34,11 @@ docker run --privileged --name "$CONTAINER_NAME" \
   --memory-swap=$SWAP \
   $IMAGE_NAME
 
-docker cp "$CONTAINER_NAME":/root/shared/benchmark_logs /tmp/container_logs
+docker cp "$CONTAINER_NAME":/root/shared/benchmark_logs /tmp/container_logs > /dev/null
 mkdir -p "$HOST_LOG_DIR"
-rsync -av --ignore-existing /tmp/container_logs/benchmark_logs/ "$HOST_LOG_DIR/"
+rsync -av --ignore-existing /tmp/container_logs/ "$HOST_LOG_DIR/" > /dev/null
 rm -rf /tmp/container_logs
 
-docker rm "$CONTAINER_NAME"
-docker image rm $IMAGE_NAME --force
+docker rm "$CONTAINER_NAME" > /dev/null
+docker image rm $IMAGE_NAME --force  > /dev/null
 rm .env
