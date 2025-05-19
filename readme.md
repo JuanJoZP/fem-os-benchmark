@@ -46,55 +46,50 @@ SCHED_RR_TIMESLICE_MS=100
 -   **THP_MODE**: Transparent Huge Pages mode  
     Values: `always`, `never`, `madvise`
 
--   **SWAPPINESS**: Kernel swappiness (integer 0–100)  
-    Controls tendency to swap.
+-   **SWAPPINESS**: Kernel swappiness. Controls tendency to swap.  
+    (integer 0–100)  
+    
+-   **DIRTY_RATIO**: Max % of memory filled with dirty pages before flushing to disk.  
+    (integer 0–100)
 
--   **DIRTY_RATIO**: Max % of memory filled with dirty pages before flushing to disk.
+-   **DIRTY_BG_RATIO**: Background dirty page threshold (%).  
+    (integer 0–100)
 
--   **DIRTY_BG_RATIO**: Background dirty page threshold (%).
+-   **OVERCOMMIT_MEMORY**: `0`: heuristic overcommit (default). `1`: always overcommit, never check. `2`: Always check, never overcommit
 
--   **OVERCOMMIT_MEMORY**: (0,1 or 2)
-    0: heuristic overcommit (default)
-    1: always overcommit, never check
-    2: always check, never overcommit
+-   **MIN_FREE_KBYTES**: the minimum amount of RAM that should be kept free for system operations.  
+    (integer, bytes)
 
--   **MIN_FREE_KBYTES**: the minimum amount of RAM that should be kept free for system operations. (integer, bytes)
+-   **SCHEDULER**: CPU Scheduler.
+    Values: `rr`: Round Robin, `fifo`: First in first out, `cfs`: Completely fair scheduler)
 
--   **SCHEDULER**: CPU Scheduler. (rr: Round Robin, fifo: First in first out, cfs: Completely fair scheduler)
+-   **SCHED_CFS_BANDWIDTH_SLICE_US**: Check docs for linux `/proc/sys/kernel/`.  
+    (integer, microseconds)
 
--   **SCHED_CFS_BANDWIDTH_SLICE_US**: integer, microseconds.
-
--   **SCHED_RR_TIMESLICE_MS**: integer, miliseconds
-
+-   **SCHED_RR_TIMESLICE_MS**: Check docs for linux `/proc/sys/kernel/`.  
+    (integer, miliseconds)
+    
 ## 📊 Output
 
--   The benchmark runs the trial **5 times** using the configured resources.
--   For each repetition, system metrics are collected, including:
+-   The benchmark runs the trial for the amount of repetitions requested using the configured resources and OS parameters.
+-   For each repetition, the following execution metrics are collected in `benchmark_logs/config/trial/date/exec_log.[txt|csv]`:
 
-    -   Execution time
+    -   Execution time (total, user and kernel)
     -   CPU Usage percentage
     -   Maximum set size (max allocated memory to a process)
     -   Context switches (Voluntary and Involuntary)
     -   Page faults
-    -   OOM events
 
--   A **CSV report** of memory usage is also saved.
--   Mean and variance of execution metrics, and plots of memory metrics are saved in `benchmark_logs/config/trial/date/stats`
--   All logs and raw data are saved in the `benchmark_logs/config/trial/date` directory.
+-   Also the following memory usage metrics are collected in `benchmark_logs/config/trial/date/memory_log.csv` (one entry each half second, during whole execution):
 
-## 📁 Example Directory Structure
-
-```
-benchmark_logs/
-├── config1/
-├────── trial1/
-│       └── 2025-05-16_14-03-12/
-│           └── config_info.txt
-│           └── exec_log.txt
-│           └── exec_log.csv
-│           └── memory_log.csv
-│           └── stats/
-```
+    -   Available memory (kB).
+    -   Available swap memory (kB).
+    -   Memory used by anonimous pages (kB).
+    -   Memory used by the pages table (kB).
+    -   Memory used by huge anonimous pages (kB).
+    -   Number of anonimous transparent huge pages.
+      
+-   Mean and variance of execution metrics, and plots of memory metrics evolution in execution time are saved in `benchmark_logs/config/trial/date/stats`
 
 ## 🧩 Notes
 
