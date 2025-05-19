@@ -30,11 +30,7 @@ case "$SCHEDULER" in
   fifo) CHRT_OPT="-f" ;;
   rr)   CHRT_OPT="-r" ;;
   cfs) CHRT_OPT="-o" ;;
-  *)
-    echo "Scheduler inválido: $SCHEDULER"
-    echo "Opciones válidas: fifo, rr, cfs"
-    exit 1
-    ;;
+  *) CHRT_OPT="-o" ;;
 esac
 BENCHMARK_CMD="chrt $CHRT_OPT 10 mpirun -n ${OMP_NUM_THREADS} python3 /root/shared/main.py"
 

@@ -26,7 +26,11 @@ THP_MODE=always
 SWAPPINESS=1
 DIRTY_RATIO=10
 DIRTY_BG_RATIO=5
-SCHED_CHILD_FIRST=1
+OVERCOMMIT_MEMORY=1
+MIN_FREE_KBYTES=5120
+SCHEDULER=rr
+SCHED_CFS_BANDWIDTH_SLICE_US=8000
+SCHED_RR_TIMESLICE_MS=100
 ```
 
 ### 🛠 Required Parameters
@@ -49,8 +53,18 @@ SCHED_CHILD_FIRST=1
 
 -   **DIRTY_BG_RATIO**: Background dirty page threshold (%).
 
--   **SCHED_CHILD_FIRST**: Whether child processes inherit nice/scheduling settings.  
-    Values: `0` (default), `1`
+-   **OVERCOMMIT_MEMORY**: (0,1 or 2)
+    0: heuristic overcommit (default)
+    1: always overcommit, never check
+    2: always check, never overcommit
+
+-   **MIN_FREE_KBYTES**: the minimum amount of RAM that should be kept free for system operations. (integer, bytes)
+
+-   **SCHEDULER**: CPU Scheduler. (rr: Round Robin, fifo: First in first out, cfs: Completely fair scheduler)
+
+-   **SCHED_CFS_BANDWIDTH_SLICE_US**: integer, microseconds.
+
+-   **SCHED_RR_TIMESLICE_MS**: integer, miliseconds
 
 ## 📊 Output
 
@@ -65,24 +79,26 @@ SCHED_CHILD_FIRST=1
     -   OOM events
 
 -   A **CSV report** of memory usage is also saved.
--   All logs and raw data are saved in the `benchmark_logs/` directory.
+-   Mean and variance of execution metrics, and plots of memory metrics are saved in `benchmark_logs/config/trial/date/stats`
+-   All logs and raw data are saved in the `benchmark_logs/config/trial/date` directory.
 
 ## 📁 Example Directory Structure
 
 ```
 benchmark_logs/
-├── trial1/
-│   └── 2025-05-16_14-03-12/
-│       ├── config_info.txt
-│       └── exec_log.txt
-│       └── exec_log.csv
-│       └── memory_log.csv
+├── config1/
+├────── trial1/
+│       └── 2025-05-16_14-03-12/
+│           └── config_info.txt
+│           └── exec_log.txt
+│           └── exec_log.csv
+│           └── memory_log.csv
+│           └── stats/
 ```
 
 ## 🧩 Notes
 
--   The container is built and run dynamically from the configuration.
--   No state or container image is preserved unless explicitly saved.
--   If the python script depends on other files they should be loaded into `dependencies` directory and they will be loaded to `/root/shared` in the container
+-   The container is built and run dynamically from the configuration, then destroyed.
+-   If the trial script depends on other files they should be loaded into `dependencies` directory and they will be loaded to `/root/shared` in the container.
 
 ---
