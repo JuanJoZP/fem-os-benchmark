@@ -23,11 +23,13 @@ IMAGE_NAME=benchmark_img_tmp
 
 echo "Construyendo imagen Docker"
 docker build -q --build-arg TRIAL_FILE="$TRIAL_FILE" -t $IMAGE_NAME .
+echo
 
 CONTAINER_NAME=benchmark_temp
 HOST_LOG_DIR=./benchmark_logs
 
 echo "Ejecutando contenedor"
+echo
 docker run --privileged --name "$CONTAINER_NAME" \
   --cpuset-cpus=$CPU_SET \
   --memory=$MEMORY \

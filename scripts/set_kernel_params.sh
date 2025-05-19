@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "Aplicando parámetros del kernel desde variables de entorno"
-
 # Verifica permisos
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "Este script requiere permisos de root."
@@ -24,6 +22,7 @@ DIRTY_RATIO=${DIRTY_RATIO:-20}
 DIRTY_BG_RATIO=${DIRTY_BG_RATIO:-10}
 SCHED_CHILD_FIRST=${SCHED_CHILD_FIRST:-0}
 
+echo
 # Transparent Huge Pages (si se puede)
 if [[ -f /sys/kernel/mm/transparent_hugepage/enabled ]]; then
     echo "$THP_MODE" > /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null
@@ -49,4 +48,5 @@ else
     echo "kernel.sched_child_runs_first no está disponible en este sistema. Se omite."
 fi
 
+echo
 echo "Parámetros aplicados."

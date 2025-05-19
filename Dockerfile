@@ -2,11 +2,11 @@ FROM dolfinx/dolfinx:stable
 
 ARG TRIAL_FILE
 
-RUN apt-get update && apt-get install -y \
-    time \
-    bc \
-    && python3 -m pip install tqdm \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y time
+RUN apt-get install -y bc
+RUN python3 -m pip install tqdm
+RUN rm -rf /var/lib/apt/lists/*
 
 
 COPY scripts/benchmark.sh /root/shared/benchmark.sh
