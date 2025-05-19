@@ -25,7 +25,18 @@ echo "repetition,real_time_sec,cpu_percent,max_resident_kb,vol_ctx_switches,invo
 echo "time,MemTotal,MemAvailable,SwapTotal,SwapFree,AnonPages,PageTables,AnonHugePages,nr_anon_transparent_hugepages" > "$MEMORY_LOG_FILE"
 /root/shared/get_os_info.sh >> "$INFO_FILE" 2>&1
 
-BENCHMARK_CMD="mpirun -n ${OMP_NUM_THREADS} python3 /root/shared/main.py"
+SCHEDULER=$(grep '^SCHEDULER=' /root/shared/.env | cut -d '=' -f2-)
+case "$SCHEDULER" in
+  fifo) CHRT_OPT="-f" ;;
+  rr)   CHRT_OPT="-r" ;;
+  cfs) CHRT_OPT="-o" ;;
+  *)
+    echo "Scheduler inválido: $SCHEDULER"
+    echo "Opciones válidas: fifo, rr, cfs"
+    exit 1
+    ;;
+esac
+BENCHMARK_CMD="chrt $CHRT_OPT 10 mpirun -n ${OMP_NUM_THREADS} python3 /root/shared/main.py"
 
 echo ""
 for i in $(seq 1 $REPS)
@@ -60,13 +71,11 @@ do
             sleep 0.5
         done
     } &
-
     MONITOR_PID=$!
 
     echo "[Repetición $i]" >> "$METRICS_FILE"
     format="Tiempo total (segundos): %e\nTiempo de CPU en modo usuario (segundos): %U\nTiempo de CPU en modo kernel (segundos): %S\nPorcentaje de CPU utilizado: %P%%\nMemoria residente máxima: %M KB\nContext switches voluntarios: %w\nContext switches involuntarios: %c\nPage faults: %F\n"
     /usr/bin/time --output="$METRICS_FILE" --append --format="$format" $BENCHMARK_CMD
-
 
     kill $MONITOR_PID # detiene el monitoreo de memoria
 

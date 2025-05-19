@@ -26,14 +26,14 @@ docker build -q --build-arg TRIAL_FILE="$TRIAL_FILE" -t $IMAGE_NAME .
 echo
 
 CONTAINER_NAME=benchmark_temp
-HOST_LOG_DIR=./benchmark_logs
+HOST_LOG_DIR=./benchmark_logs/$(basename "${ENV_FILE%.*}")
 
 echo "Ejecutando contenedor"
 echo
 docker run --privileged --name "$CONTAINER_NAME" \
   --cpuset-cpus=$CPU_SET \
-  --memory=$MEMORY \
-  --memory-swap=$SWAP \
+  --memory="$MEMORY" \
+  --memory-swap="$SWAP" \
   $IMAGE_NAME
 
 docker cp "$CONTAINER_NAME":/root/shared/benchmark_logs /tmp/container_logs > /dev/null
@@ -44,3 +44,7 @@ rm -rf /tmp/container_logs
 docker rm "$CONTAINER_NAME" > /dev/null
 docker image rm $IMAGE_NAME --force  > /dev/null
 rm .env
+
+latest_file=$(find "$HOST_LOG_DIR" -type f -printf "%T@ %p\n" | sort -nr | head -n1 | cut -d' ' -f2-)
+target_dir=$(dirname "$latest_file")
+./scripts/create_report.sh "$target_dir"

@@ -20,7 +20,8 @@ THP_MODE=${THP_MODE:-"madvise"}
 SWAPPINESS=${SWAPPINESS:-60}
 DIRTY_RATIO=${DIRTY_RATIO:-20}
 DIRTY_BG_RATIO=${DIRTY_BG_RATIO:-10}
-SCHED_CHILD_FIRST=${SCHED_CHILD_FIRST:-0}
+OVERCOMMIT_MEMORY=${OVERCOMMIT_MEMORY:-1}
+MIN_FREE_KBYTES=${MIN_FREE_KBYTES:-163230}
 
 echo
 # Transparent Huge Pages (si se puede)
@@ -35,18 +36,12 @@ else
     echo "El sistema no soporta THP o el archivo no está disponible en este contenedor."
 fi
 
-# Swappiness
-sysctl -w vm.swappiness=$SWAPPINESS || true
 
-# Dirty cache ratios
+sysctl -w vm.swappiness=$SWAPPINESS || true
 sysctl -w vm.dirty_ratio=$DIRTY_RATIO || true
 sysctl -w vm.dirty_background_ratio=$DIRTY_BG_RATIO || true
-
-if [ -f /proc/sys/kernel/sched_child_runs_first ]; then
-    sysctl -w kernel.sched_child_runs_first="$SCHED_CHILD_FIRST" || true
-else
-    echo "kernel.sched_child_runs_first no está disponible en este sistema. Se omite."
-fi
+sysctl -w vm.overcommit_memory=$OVERCOMMIT_MEMORY || true
+sysctl -w vm.min_free_kbytes=$MIN_FREE_KBYTES || true
 
 echo
 echo "Parámetros aplicados."

@@ -20,8 +20,8 @@ Each benchmark configuration is defined by a `.env` file. Example:
 REPS=2
 TRIAL_FILE=trials/volume_taylor.py
 CPU_SET="0,1"
-MEMORY="4g"
-SWAP="6g"
+MEMORY=4g
+SWAP=6g
 THP_MODE=always
 SWAPPINESS=1
 DIRTY_RATIO=10
